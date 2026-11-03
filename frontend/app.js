@@ -1,14 +1,111 @@
-const $=id=>document.getElementById(id);let activeCategory='All',allDocs=[];
-async function api(url,options={}){const r=await fetch(url,options);const data=await r.json();if(!r.ok||data.ok===false)throw new Error(data.error||'Request failed');return data;}
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function categoryClass(s){return s.toLowerCase().replace(/[^a-z]+/g,'-').replace(/-$/,'');}
-function snippet(s){return (s||'').replace(/\s+/g,' ').trim().slice(0,150);}
-function renderCards(docs){const cards=$('cards');cards.innerHTML='';const shown=docs.filter(d=>activeCategory==='All'||d.category===activeCategory);$('count').textContent=`${shown.length} resource${shown.length===1?'':'s'}`;$('empty').hidden=shown.length>0;
-for(const d of shown){const el=document.createElement('article');el.className='doc-card';el.innerHTML=`<div class="doc-top"><span class="tag ${categoryClass(d.category)}">${esc(d.category)}</span><span class="doc-id">ID ${d.id}</span></div><h3>${esc(d.title)}</h3><div class="author">${esc(d.author)}</div><p class="snippet">${esc(snippet(d.content)||'No text content added yet.')}</p><div class="doc-foot"><span>▧ &nbsp;${d.year}</span><div class="actions"><button data-action="edit" data-id="${d.id}">Edit</button><button data-action="delete" data-id="${d.id}">Delete</button></div></div>`;cards.appendChild(el);}}
-async function load(){const q=$('query').value.trim(),mode=$('mode').value,sort=$('sort').value,dir=$('dir').value;try{const data=await api(`/api/documents?q=${encodeURIComponent(q)}&mode=${mode}&sort=${sort}&dir=${dir}`);allDocs=data.documents||[];renderCards(allDocs);const st=await api('/api/stats');$('total').textContent=st.total;$('books').textContent=st.categories.find(x=>x.name==='Books')?.count||0;$('papers').textContent=st.categories.find(x=>x.name==='Research Papers')?.count||0;$('other').textContent=Math.max(0,st.total-($('books').textContent*1)-($('papers').textContent*1));}catch(e){$('empty').hidden=false;$('empty').textContent=e.message;}}
-function openForm(doc=null){$('docForm').reset();$('docId').value=doc?.id||'';$('modalTitle').textContent=doc?'Edit document':'Add document';if(doc){$('title').value=doc.title;$('author').value=doc.author;$('category').value=doc.category;$('year').value=doc.year;$('content').value=doc.content||'';}else $('year').value=new Date().getFullYear();$('docDialog').showModal();}
-$('addBtn').onclick=()=>openForm();$('closeDialog').onclick=$('cancel').onclick=()=>$('docDialog').close();$('query').addEventListener('input',load);$('mode').onchange=$('sort').onchange=$('dir').onchange=load;
-document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');activeCategory=b.dataset.category;renderCards(allDocs);});
-$('cards').addEventListener('click',async e=>{const b=e.target.closest('button[data-action]');if(!b)return;const d=allDocs.find(x=>x.id===Number(b.dataset.id));if(!d)return;if(b.dataset.action==='edit')openForm(d);else if(confirm(`Delete “${d.title}”? This cannot be undone.`)){try{await api(`/api/documents/${d.id}`,{method:'DELETE'});await load();}catch(err){alert(err.message);}}});
-$('docForm').onsubmit=async e=>{e.preventDefault();const id=$('docId').value;const payload={title:$('title').value.trim(),author:$('author').value.trim(),category:$('category').value,year:Number($('year').value),content:$('content').value};try{await api(id?`/api/documents/${id}`:'/api/documents',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});$('docDialog').close();await load();}catch(err){alert(err.message);}};
-load();
+const $ = (id) => document.getElementById(id);
+
+const viewNames = {
+  dashboard: 'Dashboard',
+  search: 'Search Library',
+  documents: 'All Documents',
+  add: 'Add Document',
+  manage: 'Manage Documents'
+};
+
+let allDocuments = [];
+let statistics = { total: 0, categories: [] };
+let searchTimer;
+
+async function api(url, options = {}) {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (!response.ok || data.ok === false) throw new Error(data.error || 'The library service returned an error.');
+  return data;
+}
+
+function escapeHtml(value = '') {
+  return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
+
+function preview(value = '') {
+  const clean = value.replace(/\s+/g, ' ').trim();
+  return clean ? `${clean.slice(0, 170)}${clean.length > 170 ? '…' : ''}` : 'No text preview is available for this resource.';
+}
+
+function setView(view) {
+  const nextView = viewNames[view] ? view : 'dashboard';
+  document.querySelectorAll('.view').forEach((element) => element.classList.toggle('active', element.id === `view-${nextView}`));
+  document.querySelectorAll('[data-view]').forEach((element) => element.classList.toggle('active', element.dataset.view === nextView));
+  $('breadcrumbCurrent').textContent = viewNames[nextView];
+  history.replaceState(null, '', nextView === 'dashboard' ? '#' : `#${nextView}`);
+  if (nextView === 'search') loadDocuments();
+}
+
+function renderStats() {
+  const categoryCount = statistics.categories.length;
+  const cards = [
+    ['Total documents', statistics.total, 'Resources in the catalogue', '▤'],
+    ['Categories', categoryCount, 'Academic resource types', '◫'],
+    ['Latest publication year', allDocuments.reduce((latest, document) => Math.max(latest, Number(document.year) || 0), 0) || '—', 'Based on catalogue metadata', '◷']
+  ];
+  $('statGrid').innerHTML = cards.map(([label, value, note, icon]) => `<article class="stat-card"><div class="stat-top"><span>${escapeHtml(label)}</span><span class="stat-icon">${icon}</span></div><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note)}</small></article>`).join('');
+}
+
+function renderCategories() {
+  const highest = Math.max(...statistics.categories.map((category) => Number(category.count)), 1);
+  $('categoryList').innerHTML = statistics.categories.map((category) => {
+    const width = Math.round((Number(category.count) / highest) * 100);
+    return `<div class="category-row"><div class="category-meta"><span>${escapeHtml(category.name)}</span><strong>${escapeHtml(category.count)}</strong></div><div class="bar-track"><span style="width:${width}%"></span></div></div>`;
+  }).join('');
+}
+
+function renderDocuments(documents) {
+  $('searchSummary').textContent = $('query').value.trim() ? `Results for “${$('query').value.trim()}”` : 'All resources';
+  $('searchCount').textContent = `${documents.length} resource${documents.length === 1 ? '' : 's'}`;
+  $('results').innerHTML = documents.map((document) => `<article class="result-card"><div class="result-top"><span class="category-tag">${escapeHtml(document.category)}</span><span class="document-id">ID ${escapeHtml(document.id)}</span></div><h2>${escapeHtml(document.title)}</h2><p class="result-author">${escapeHtml(document.author)}</p><p class="result-preview">${escapeHtml(preview(document.content))}</p><div class="result-footer"><span><strong>Publication year</strong> ${escapeHtml(document.year)}</span><button class="text-button" type="button" data-preview-id="${escapeHtml(document.id)}">View preview <span aria-hidden="true">→</span></button></div></article>`).join('');
+  $('searchState').hidden = documents.length > 0;
+  if (!documents.length) $('searchState').textContent = $('query').value.trim() ? 'No resources matched your search. Try fewer terms or switch to “any term”.' : 'No documents are available in the collection.';
+}
+
+async function loadStatistics() {
+  try {
+    statistics = await api('/api/stats');
+    renderStats();
+    renderCategories();
+  } catch (error) {
+    $('statGrid').innerHTML = `<div class="state-panel inline-state">${escapeHtml(error.message)}</div>`;
+    $('categoryList').innerHTML = '';
+  }
+}
+
+async function loadDocuments() {
+  const query = $('query').value.trim();
+  const mode = $('mode').value;
+  const sort = $('sort').value;
+  const direction = $('dir').value;
+  $('searchState').hidden = true;
+  $('results').innerHTML = '<div class="loading-state">Searching the live collection…</div>';
+  try {
+    const data = await api(`/api/documents?q=${encodeURIComponent(query)}&mode=${encodeURIComponent(mode)}&sort=${encodeURIComponent(sort)}&dir=${encodeURIComponent(direction)}`);
+    allDocuments = data.documents || [];
+    renderDocuments(allDocuments);
+    renderStats();
+  } catch (error) {
+    $('results').innerHTML = '';
+    $('searchState').hidden = false;
+    $('searchState').textContent = error.message;
+  }
+}
+
+function scheduleSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadDocuments, 220);
+}
+
+document.querySelectorAll('[data-view]').forEach((element) => element.addEventListener('click', () => setView(element.dataset.view)));
+$('query').addEventListener('input', scheduleSearch);
+$('query').addEventListener('keydown', (event) => { if (event.key === 'Enter') loadDocuments(); });
+$('mode').addEventListener('change', loadDocuments);
+$('sort').addEventListener('change', loadDocuments);
+$('dir').addEventListener('change', loadDocuments);
+
+const initialView = window.location.hash.slice(1);
+setView(viewNames[initialView] ? initialView : 'dashboard');
+loadStatistics();
+loadDocuments();
