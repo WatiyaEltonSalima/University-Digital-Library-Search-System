@@ -10,95 +10,67 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar" aria-label="Primary navigation">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">NU</div>
-        <div>
-          <strong>Northrise</strong>
-          <span>UNIVERSITY LIBRARY</span>
-        </div>
-      </div>
-
-      <div class="sidebar-label">Workspace</div>
+      <div class="brand"><div class="brand-mark" aria-hidden="true">NU</div><div class="brand-copy"><strong>Northrise</strong><span>University</span></div></div>
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span></button>
-        <button class="nav-item" data-view="search" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span>Search Library</span></button>
-        <button class="nav-item" data-view="documents" type="button"><span class="nav-icon" aria-hidden="true">▤</span><span>All Documents</span></button>
-        <button class="nav-item" data-view="add" type="button"><span class="nav-icon" aria-hidden="true">＋</span><span>Add Document</span></button>
-        <button class="nav-item" data-view="manage" type="button"><span class="nav-icon" aria-hidden="true">≡</span><span>Manage Documents</span></button>
+        <button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+        <button class="nav-item" data-view="search" type="button"><span class="nav-icon">⌕</span><span>Search Library</span></button>
+        <button class="nav-item" data-view="documents" type="button"><span class="nav-icon">▤</span><span>All Documents</span></button>
+        <button class="nav-item" data-view="add" type="button"><span class="nav-icon">＋</span><span>Add Document</span></button>
+        <button class="nav-item" data-view="manage" type="button"><span class="nav-icon">≡</span><span>Manage Documents</span></button>
+        <button class="nav-item" data-view="about" type="button"><span class="nav-icon">●</span><span>About System</span></button>
       </nav>
-
-      <div class="sidebar-footer">
-        <div class="footer-avatar" aria-hidden="true">UL</div>
-        <div>
-          <strong>University Library</strong>
-          <span>Library workspace</span>
-        </div>
-      </div>
+      <button class="logout-button" type="button"><span>↪</span> Logout</button>
     </aside>
 
     <main class="main-content">
       <header class="topbar">
-        <div class="breadcrumb"><span>Digital Library</span><span aria-hidden="true">/</span><strong id="breadcrumbCurrent">Dashboard</strong></div>
-        <div class="topbar-actions">
-          <button class="topbar-search" data-view="search" type="button"><span aria-hidden="true">⌕</span> Search the collection <kbd>/</kbd></button>
-          <div class="topbar-profile" aria-label="Current workspace: University Library"><span class="profile-avatar">UL</span><span class="profile-name">University Library</span></div>
-        </div>
+        <button class="menu-button" type="button" aria-label="Toggle navigation">☰</button>
+        <button class="top-search" data-view="search" type="button"><span>Search the library...</span><b>⌕</b></button>
+        <div class="top-user"><span class="user-avatar">UL</span><span>University Library</span><span class="chevron">⌄</span></div>
       </header>
-
       <div class="page-wrap">
-        <section class="view active" id="view-dashboard" aria-labelledby="dashboardTitle">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">LIBRARY OVERVIEW</p>
-              <h1 id="dashboardTitle">Welcome to the library</h1>
-              <p class="page-intro">A focused workspace for discovering and managing Northrise University resources.</p>
-            </div>
-            <button class="button button-primary" data-view="add" type="button"><span aria-hidden="true">＋</span> Add document</button>
-          </div>
-
+        <section class="view active" id="view-dashboard">
+          <div class="page-heading"><div><h1>Dashboard</h1><p>University Digital Library Overview</p></div></div>
           <div class="stat-grid" id="statGrid" aria-live="polite"></div>
-
-          <div class="dashboard-grid">
-            <section class="panel category-panel">
-              <div class="panel-heading"><div><p class="eyebrow">COLLECTION MIX</p><h2>Browse by category</h2></div><button class="text-button" data-view="search" type="button">Explore collection <span aria-hidden="true">→</span></button></div>
-              <div class="category-list" id="categoryList" aria-live="polite"></div>
-            </section>
-            <section class="panel shortcut-panel">
-              <div class="panel-heading"><div><p class="eyebrow">QUICK ACCESS</p><h2>Useful shortcuts</h2></div></div>
-              <div class="shortcut-list">
-                <button class="shortcut" data-view="search" type="button"><span class="shortcut-icon blue" aria-hidden="true">⌕</span><span><strong>Search the library</strong><small>Find resources by title, author or content</small></span><span class="shortcut-arrow" aria-hidden="true">→</span></button>
-                <button class="shortcut" data-view="documents" type="button"><span class="shortcut-icon gold" aria-hidden="true">▤</span><span><strong>View all documents</strong><small>Browse the complete academic catalogue</small></span><span class="shortcut-arrow" aria-hidden="true">→</span></button>
-                <button class="shortcut" data-view="add" type="button"><span class="shortcut-icon green" aria-hidden="true">＋</span><span><strong>Add a document</strong><small>Save a new resource to the collection</small></span><span class="shortcut-arrow" aria-hidden="true">→</span></button>
-              </div>
-            </section>
+          <div class="dashboard-layout">
+            <section class="content-panel category-panel"><div class="panel-title"><h2>Document Categories</h2><span>Live catalogue data</span></div><div class="category-chart" id="categoryChart"></div></section>
+            <section class="content-panel quick-panel"><div class="panel-title"><h2>Quick Actions</h2></div><div class="quick-actions"><button data-view="search" type="button">⌕ <span>Search Library</span></button><button data-view="add" type="button">＋ <span>Add Document</span></button><button data-view="documents" type="button">▤ <span>View All Documents</span></button></div></section>
           </div>
-
-          <section class="panel collection-note">
-            <div class="note-icon" aria-hidden="true">i</div>
-            <div><h2>Collection at a glance</h2><p>The dashboard uses live catalogue information. Creation dates are not stored by the current system, so this overview intentionally avoids presenting publication year as a recently added date.</p></div>
-          </section>
+          <section class="notice-panel"><strong>Collection note</strong><span>Publication years are catalogue metadata, not creation dates. The dashboard does not present them as recently added resources.</span></section>
         </section>
 
-        <section class="view" id="view-search" aria-labelledby="searchTitle">
-          <div class="page-heading">
-            <div><p class="eyebrow">RESOURCE DISCOVERY</p><h1 id="searchTitle">Search Library</h1><p class="page-intro">Search titles, authors, categories and the full text of academic resources.</p></div>
-          </div>
-          <section class="search-hero panel">
-            <label class="search-label" for="query">What are you looking for?</label>
-            <div class="large-search"><span aria-hidden="true">⌕</span><input id="query" placeholder="Try “algorithms”, “Cormen” or “retrieval”" autocomplete="off"><kbd>Enter</kbd></div>
-            <p class="search-help">Use multiple words with <strong>Match all terms</strong> for a focused result, or switch to <strong>Match any term</strong> for a broader search.</p>
+        <section class="view" id="view-search">
+          <div class="page-heading"><div><h1>Search Library</h1><p>Find academic resources quickly</p></div></div>
+          <section class="content-panel search-panel">
+            <div class="search-tabs"><span class="active">Title &amp; content</span><span>Author</span><span>Category</span><span>Boolean search</span></div>
+            <div class="search-row"><label class="wide-input"><span>⌕</span><input id="query" placeholder="Enter keywords..." autocomplete="off"></label><button class="primary-button" id="searchButton" type="button">Search</button></div>
+            <p class="helper-text">Searches titles, authors, categories, and document text using the connected C search engine.</p>
           </section>
-          <div class="search-toolbar"><div><strong id="searchSummary">All resources</strong><span id="searchCount">Loading collection…</span></div><div class="toolbar-controls"><label>Match <select id="mode"><option value="AND">all terms</option><option value="OR">any term</option></select></label><label>Sort by <select id="sort"><option value="title">title</option><option value="year">publication year</option><option value="author">author</option></select></label><select id="dir" aria-label="Sort direction"><option value="asc">A–Z / low to high</option><option value="desc">Z–A / high to low</option></select></div></div>
-          <div class="results-grid" id="results" aria-live="polite"></div>
-          <div class="state-panel" id="searchState" hidden></div>
+          <div class="results-heading"><div><h2 id="searchSummary">Search Results</h2><span id="searchCount">Loading...</span></div><label>Sort by <select id="sort"><option value="title">Title</option><option value="year">Publication year</option><option value="author">Author</option></select></label><select id="dir" aria-label="Sort direction"><option value="asc">Ascending</option><option value="desc">Descending</option></select><select id="mode" aria-label="Search mode"><option value="AND">Match all</option><option value="OR">Match any</option></select></div>
+          <div class="result-list" id="results" aria-live="polite"></div><div class="state-panel" id="searchState" hidden></div>
         </section>
 
-        <section class="view placeholder-view" id="view-documents"><div class="placeholder-card"><span class="placeholder-icon">▤</span><p class="eyebrow">CATALOGUE</p><h1>All Documents</h1><p>The full document catalogue is being prepared for the next phase. Search Library already provides access to every document returned by the live backend.</p><button class="button button-primary" data-view="search" type="button">Search the collection</button></div></section>
-        <section class="view placeholder-view" id="view-add"><div class="placeholder-card"><span class="placeholder-icon">＋</span><p class="eyebrow">COLLECTION GROWTH</p><h1>Add Document</h1><p>The document submission form will be added in the next phase. Existing create functionality remains available through the backend and has not been changed.</p></div></section>
-        <section class="view placeholder-view" id="view-manage"><div class="placeholder-card"><span class="placeholder-icon">≡</span><p class="eyebrow">LIBRARY OPERATIONS</p><h1>Manage Documents</h1><p>Editing, deletion and confirmation feedback will be added in the next phase. Existing document IDs and CRUD operations remain preserved.</p></div></section>
+        <section class="view" id="view-documents">
+          <div class="page-heading"><div><h1>All Documents</h1><p>Browse the complete academic catalogue</p></div><button class="primary-button" data-view="add" type="button">＋ Add Document</button></div>
+          <section class="content-panel table-panel"><div class="table-toolbar"><strong>Document Catalogue</strong><span id="documentsCount">Loading...</span></div><div class="table-scroll"><table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th><th>Year</th></tr></thead><tbody id="documentsTable"></tbody></table></div><div class="state-panel" id="documentsState" hidden></div></section>
+        </section>
+
+        <section class="view" id="view-add">
+          <div class="page-heading"><div><h1>Add Document</h1><p>Add a new document to the library</p></div></div>
+          <section class="content-panel form-panel"><form id="documentForm"><input type="hidden" id="docId"><div class="form-heading"><strong id="formTitle">Document details</strong><span>Fields marked with <b>*</b> are required</span></div><div class="form-grid"><label>Title <b>*</b><input id="title" maxlength="159" required placeholder="Enter document title"></label><label>Publication Year <b>*</b><input id="year" type="number" min="1900" max="2100" required placeholder="Enter year"></label><label>Author <b>*</b><input id="author" maxlength="119" required placeholder="Enter author name"></label><label>Category <b>*</b><select id="category" required><option value="">Select category</option><option>Books</option><option>Research Papers</option><option>Lecture Notes</option><option>Journals</option><option>Study Guides</option></select></label><label class="full-field">Full text / abstract<textarea id="content" rows="7" placeholder="Enter document text or abstract..."></textarea></label></div><div class="form-actions"><button class="secondary-button" id="clearForm" type="button">Clear</button><button class="primary-button" type="submit">Save Document</button></div></form></section>
+        </section>
+
+        <section class="view" id="view-manage">
+          <div class="page-heading"><div><h1>Manage Documents</h1><p>View, update or remove library records</p></div><button class="primary-button" data-view="add" type="button">＋ Add Document</button></div>
+          <section class="content-panel table-panel"><div class="table-toolbar"><strong>Document Records</strong><label>Filter by Category <select id="manageCategory"><option value="All">All Categories</option><option>Books</option><option>Research Papers</option><option>Lecture Notes</option><option>Journals</option><option>Study Guides</option></select></label></div><div class="table-scroll"><table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th><th>Year</th><th>Actions</th></tr></thead><tbody id="manageTable"></tbody></table></div><div class="state-panel" id="manageState" hidden></div></section>
+        </section>
+
+        <section class="view" id="view-about"><div class="content-panel about-panel"><h1>About System</h1><p>Northrise University Digital Library connects this interface to the existing Node.js service and C search engine. Document metadata is stored in the library catalogue and full text is stored in the document collection.</p></div></section>
       </div>
     </main>
   </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="previewDialog"><button class="dialog-close" id="closePreview" type="button" aria-label="Close preview">×</button><p class="overline">DOCUMENT PREVIEW</p><h2 id="previewTitle"></h2><p id="previewMeta"></p><div id="previewContent"></div></dialog>
   <script src="app.js"></script>
 </body>
 </html>
