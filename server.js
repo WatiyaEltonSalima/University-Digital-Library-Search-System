@@ -1,9 +1,16 @@
 const http = require('http');const fs = require('fs');const path = require('path');const {execFileSync} = require('child_process');
 const ROOT = __dirname;
 const FRONT = path.join(ROOT, 'frontend');
-const BIN = path.join(ROOT, 'backend', 'library.exe');
+const BIN = path.join(ROOT, 'backend', process.platform === 'win32' ? 'library.exe' : 'library');
 function compile(){execFileSync('gcc',['backend/main.c','backend/storage.c','backend/search.c','-o',BIN],{cwd:ROOT,stdio:'inherit'});}
-try{compile();}catch(e){console.error('C compile failed. Ensure GCC is available.',e.message);process.exit(1);}
+try{compile();}catch(e){
+  if(e.code !== 'ENOENT' || !fs.existsSync(BIN)){
+    console.error('C compile failed and no compatible prebuilt engine is available.',e.message);
+    process.exit(1);
+  }
+  if(process.platform !== 'win32')fs.chmodSync(BIN,0o755);
+  console.warn('GCC is unavailable; using the bundled C search engine.');
+}
 function runC(...args){try{return JSON.parse(execFileSync(BIN,args,{cwd:ROOT,encoding:'utf8'}));}catch(e){return {ok:false,error:e.stderr?.toString()||e.message};}}
 function body(req){return new Promise((resolve,reject)=>{let s='';req.on('data',c=>s+=c);req.on('end',()=>{try{resolve(JSON.parse(s||'{}'));}catch(e){reject(e);}});});}
 function send(res,status,data){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*'});res.end(JSON.stringify(data));}
