@@ -1,0 +1,1 @@
+Data structures organize data for efficient access and modification. Arrays, linked lists, stacks, queues, trees and hash tables are common examples. Algorithm performance depends on the structure chosen and the operations performed.

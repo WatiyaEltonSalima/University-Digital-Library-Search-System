@@ -1,0 +1,1 @@
+A linked list stores nodes connected by pointers. Each node contains data and a pointer to the next node. Lists support flexible insertion and deletion, while access by position requires traversal from the head.

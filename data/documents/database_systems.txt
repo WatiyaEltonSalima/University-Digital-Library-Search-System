@@ -1,0 +1,1 @@
+﻿Database systems organize structured information using schemas, tables, keys and queries. Database design aims to support data integrity, efficient retrieval and reliable updates.

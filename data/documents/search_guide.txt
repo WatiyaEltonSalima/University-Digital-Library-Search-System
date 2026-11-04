@@ -1,0 +1,1 @@
+Linear search checks items sequentially. Binary search repeatedly halves a sorted search space. Hash tables can provide average constant-time key lookup when hashing and collision handling are effective.

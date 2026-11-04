@@ -1,0 +1,1 @@
+﻿Hash tables map keys to positions using a hash function. Collisions can be handled using chaining or open addressing, with performance depending on load factor and hash quality.

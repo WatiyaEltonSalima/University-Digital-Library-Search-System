@@ -1,0 +1,1 @@
+﻿Information retrieval research investigates how users find relevant material in large collections. Indexing, query processing and relevance evaluation are important areas of study.

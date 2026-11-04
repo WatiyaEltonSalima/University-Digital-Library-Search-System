@@ -1,0 +1,1 @@
+﻿Computer networks connect devices to exchange information. Network protocols define communication rules, while routing and addressing help data reach its destination.

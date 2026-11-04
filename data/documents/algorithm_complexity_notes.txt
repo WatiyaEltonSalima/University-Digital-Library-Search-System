@@ -1,0 +1,1 @@
+﻿Time complexity describes how an algorithm's work grows with input size. Space complexity describes additional memory requirements. Best, average and worst cases provide different performance perspectives.

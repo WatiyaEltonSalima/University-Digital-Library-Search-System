@@ -1,0 +1,1 @@
+A digital library collects, organizes, preserves and provides access to digital resources such as books, research papers, journals and learning materials. Metadata supports discovery and resource management.

@@ -1,0 +1,1 @@
+﻿Algorithms solve computational problems through well-defined steps. Their efficiency is commonly analysed using time and space complexity, including Big-O notation.

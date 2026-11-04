@@ -1,0 +1,1 @@
+﻿C programming uses functions, variables, conditions, loops and structures. Pointers allow programs to work with memory addresses and build linked data structures.

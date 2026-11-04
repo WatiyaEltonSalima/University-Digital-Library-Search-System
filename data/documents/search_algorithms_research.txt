@@ -1,0 +1,1 @@
+﻿Search algorithms can be compared by correctness, execution time and memory use. Linear search examines records sequentially, while binary search requires ordered data.

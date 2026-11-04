@@ -1,0 +1,1 @@
+﻿Digital library computing explores resource management, indexing, access and preservation. Reliable systems combine useful metadata with efficient retrieval and maintainable storage.

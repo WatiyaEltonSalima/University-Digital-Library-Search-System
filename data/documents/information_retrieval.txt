@@ -1,0 +1,1 @@
+Information retrieval finds relevant documents in a collection. A search engine may tokenize documents, normalize terms and build an inverted index mapping each term to the documents containing it. Boolean AND combines intersections while OR combines unions.

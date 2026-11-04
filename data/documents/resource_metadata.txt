@@ -1,0 +1,1 @@
+﻿Metadata describes resources using fields such as title, author, subject and publication year. Consistent metadata improves organization, filtering and discovery.

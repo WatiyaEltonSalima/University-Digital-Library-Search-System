@@ -1,0 +1,1 @@
+﻿Boolean retrieval combines query terms with operators such as AND and OR. AND requires all specified terms to match, while OR accepts a match for either term.

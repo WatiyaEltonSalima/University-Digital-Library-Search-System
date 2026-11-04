@@ -1,0 +1,1 @@
+﻿Revise arrays, linked lists, stacks, queues, trees and hash tables. Compare their operations and complexity, and practise selecting suitable structures for common problems.

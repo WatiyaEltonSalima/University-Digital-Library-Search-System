@@ -1,0 +1,1 @@
+﻿Software engineering applies systematic methods to requirements, design, implementation, testing and maintenance. Quality assurance helps identify defects and improve reliability.
